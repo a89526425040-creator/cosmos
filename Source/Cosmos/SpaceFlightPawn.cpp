@@ -235,8 +235,16 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
         }
     }
 
-    const FVector AngularAccelerationVector(FMath::Clamp(RollInput + TouchRollInput, -1.0f, 1.0f), PitchInput, YawInput);
-    AngularVelocityLocal += AngularAccelerationVector * AngularAcceleration * DeltaSeconds;
+    // RCS torque divided by the approximate principal moments of inertia (I = tau / alpha).
+    const FVector AppliedTorqueNewtonMetres(
+        FMath::Clamp(RollInput + TouchRollInput, -1.0f, 1.0f) * RollTorqueNewtonMetres,
+        PitchInput * PitchYawTorqueNewtonMetres,
+        YawInput * PitchYawTorqueNewtonMetres);
+    const FVector AngularAccelerationRadPerSec2(
+        AppliedTorqueNewtonMetres.X / RotationalInertiaKgMetresSquared.X,
+        AppliedTorqueNewtonMetres.Y / RotationalInertiaKgMetresSquared.Y,
+        AppliedTorqueNewtonMetres.Z / RotationalInertiaKgMetresSquared.Z);
+    AngularVelocityLocal += AngularAccelerationRadPerSec2 * DeltaSeconds;
     AngularVelocityLocal *= FMath::Exp(-AngularDamping * DeltaSeconds);
 
     const float AngularSpeed = AngularVelocityLocal.Size();
