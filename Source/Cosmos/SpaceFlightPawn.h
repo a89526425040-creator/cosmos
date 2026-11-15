@@ -75,11 +75,9 @@ private:
     void InputThrottle(float Value);
     void InputPitch(float Value);
     void InputYaw(float Value);
-    void InputRollPositive();
-    void InputRollNegative();
+    void InputRoll(float Value);
     void InputStrafe(float Value);
-    void InputLiftPositive();
-    void InputLiftNegative();
+    void InputLift(float Value);
     void BuildShipVisuals();
     void SetPartTint(UPrimitiveComponent* Component, const FLinearColor& Color);
     void UpdateFlightPhysics(float DeltaSeconds);
