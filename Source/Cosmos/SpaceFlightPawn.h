@@ -71,9 +71,16 @@ private:
     float RcsAcceleration = 0.28f;
     float AngularAcceleration = 0.38f;
     float AngularDamping = 0.12f;
+    float DragCoefficient = 0.32f;
+    float ReferenceAreaSquareMetres = 24.0f;
+    double LastAccelerationCmPerSec2 = 0.0;
+    double GravityAccelerationCmPerSec2 = 0.0;
+    double AirDensityKgPerCubicMetre = 0.0;
+    double DynamicPressurePascals = 0.0;
 
     static constexpr double EarthRadiusCm = 637100.0;
     static constexpr double EarthMuCm3PerSec2 = 3.986004418e11;
+    static constexpr double EarthRotationRadPerSec = 7.2921159e-5;
     static constexpr double MetresPerGameCentimetre = 10.0;
 
     void InputThrottle(float Value);
