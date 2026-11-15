@@ -65,11 +65,9 @@ void APlanetActor::SetTint(UPrimitiveComponent* Component, const FLinearColor& C
     UMaterialInterface* Parent = Component->GetMaterial(0);
     if (!Parent)
     {
-        static ConstructorHelpers::FObjectFinder<UMaterialInterface> BasicMaterial(
+        Parent = LoadObject<UMaterialInterface>(nullptr,
             TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-        Parent = BasicMaterial.Succeeded()
-            ? BasicMaterial.Object
-            : UMaterial::GetDefaultMaterial(MD_Surface);
+        if (!Parent) Parent = UMaterial::GetDefaultMaterial(MD_Surface);
     }
 
     UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Parent, this);
