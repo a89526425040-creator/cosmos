@@ -1,0 +1,35 @@
+name: Check Epic Unreal Engine access
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-access:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Epic Games repository access
+        env:
+          EPIC_GITHUB_TOKEN: ${{ secrets.EPIC_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${EPIC_GITHUB_TOKEN:-}" ]; then
+            echo "::error::Secret EPIC_GITHUB_TOKEN is missing or empty."
+            exit 1
+          fi
+          AUTH="$(printf 'x-access-token:%s' "$EPIC_GITHUB_TOKEN" | base64 -w0)"
+          if git -c "http.extraheader=AUTHORIZATION: basic $AUTH" ls-remote https://github.com/EpicGames/UnrealEngine.git refs/heads/5.8 > refs.txt; then
+            if [ -s refs.txt ]; then
+              echo "SUCCESS: token can read EpicGames/UnrealEngine branch 5.8."
+              cat refs.txt
+            else
+              echo "::error::Repository was reached, but branch 5.8 was not found."
+              exit 1
+            fi
+          else
+            echo "::error::Could not read EpicGames/UnrealEngine. Check token scope, expiration, and EpicGames organization approval."
+            exit 1
+          fi
