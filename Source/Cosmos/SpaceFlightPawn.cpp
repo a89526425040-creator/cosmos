@@ -172,10 +172,10 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
     const FVector RadialUp = Position.GetSafeNormal();
 
     FVector Acceleration = FVector::ZeroVector;
-    if (Radius > EarthRadiusCm * 0.25)
-    {
-        Acceleration -= RadialUp * (EarthMuCm3PerSec2 / (Radius * Radius));
-    }
+    GravityAccelerationCmPerSec2 = Radius > EarthRadiusCm * 0.25
+        ? EarthMuCm3PerSec2 / (Radius * Radius)
+        : 0.0;
+    Acceleration -= RadialUp * GravityAccelerationCmPerSec2;
 
     const float CurrentMass = DryMassKg + FuelKg;
     const float SignedThrottle = ThrottleInput;
@@ -197,6 +197,28 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
     Acceleration += GetActorRightVector() * (StrafeInput * RcsAcceleration);
     Acceleration += GetActorUpVector() * (FMath::Clamp(LiftInput + TouchLiftInput, -1.0f, 1.0f) * RcsAcceleration);
 
+    // Exponential Earth atmosphere with rotating-air reference frame.
+    // 100 game cm = 1 km, therefore 1 game cm/s = 10 m/s.
+    const double AltitudeMetres = (Radius - EarthRadiusCm) * 10.0;
+    AirDensityKgPerCubicMetre = AltitudeMetres < 150000.0
+        ? 1.225 * FMath::Exp(-FMath::Max(0.0, AltitudeMetres) / 8500.0)
+        : 0.0;
+    const FVector PlanetAngularVelocity(0.0, 0.0, EarthRotationRadPerSec);
+    const FVector AtmosphericVelocity = FVector::CrossProduct(PlanetAngularVelocity, Position);
+    const FVector AirRelativeVelocity = Velocity - AtmosphericVelocity;
+    const double AirRelativeSpeedMetresPerSecond = AirRelativeVelocity.Size() * MetresPerGameCentimetre;
+    DynamicPressurePascals = 0.5 * AirDensityKgPerCubicMetre
+        * AirRelativeSpeedMetresPerSecond * AirRelativeSpeedMetresPerSecond;
+    const double DragForceNewtons = DynamicPressurePascals * DragCoefficient * ReferenceAreaSquareMetres;
+    const double DragAccelerationCmPerSec2 = CurrentMass > 0.0f
+        ? (DragForceNewtons / CurrentMass) * 0.1
+        : 0.0;
+    if (!AirRelativeVelocity.IsNearlyZero())
+    {
+        Acceleration -= AirRelativeVelocity.GetSafeNormal() * DragAccelerationCmPerSec2;
+    }
+
+    LastAccelerationCmPerSec2 = Acceleration.Size();
     Velocity += Acceleration * DeltaSeconds;
 
     // Tiny numerical damping only. In vacuum, momentum is preserved when controls are released.
@@ -235,6 +257,11 @@ void ASpaceFlightPawn::UpdateFlightReadout()
     const double SpeedKmPerSecond = Velocity.Size() * 0.01;
     const double SpeedMetresPerSecond = Velocity.Size() * MetresPerGameCentimetre;
     const double AngularSpeedDeg = FMath::RadiansToDegrees(AngularVelocityLocal.Size());
+    const double GravityMs2 = GravityAccelerationCmPerSec2 * 10.0;
+    const double AccelerationMs2 = LastAccelerationCmPerSec2 * 10.0;
+    const double CurrentMassKg = DryMassKg + FuelKg;
+    const double RemainingDeltaVMs = SpecificImpulseSeconds * 9.80665
+        * FMath::Loge(FMath::Max(1.0, CurrentMassKg) / DryMassKg);
 
     const FString Readout = FString::Printf(
         TEXT("COSMOS // FLIGHT DATA\nALTITUDE  %.1f km   SPEED  %.3f km/s (%.0f m/s)\n")
