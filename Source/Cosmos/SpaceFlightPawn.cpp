@@ -125,6 +125,16 @@ void ASpaceFlightPawn::SetInitialVelocity(const FVector& InVelocity)
     Velocity = InVelocity;
 }
 
+void ASpaceFlightPawn::SetTouchRoll(float Value)
+{
+    TouchRollInput = FMath::Clamp(Value, -1.0f, 1.0f);
+}
+
+void ASpaceFlightPawn::SetTouchLift(float Value)
+{
+    TouchLiftInput = FMath::Clamp(Value, -1.0f, 1.0f);
+}
+
 void ASpaceFlightPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -184,7 +194,7 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
     }
 
     Acceleration += GetActorRightVector() * (StrafeInput * RcsAcceleration);
-    Acceleration += GetActorUpVector() * (LiftInput * RcsAcceleration);
+    Acceleration += GetActorUpVector() * (FMath::Clamp(LiftInput + TouchLiftInput, -1.0f, 1.0f) * RcsAcceleration);
 
     Velocity += Acceleration * DeltaSeconds;
 
@@ -202,7 +212,7 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
         }
     }
 
-    const FVector AngularAccelerationVector(RollInput, PitchInput, YawInput);
+    const FVector AngularAccelerationVector(FMath::Clamp(RollInput + TouchRollInput, -1.0f, 1.0f), PitchInput, YawInput);
     AngularVelocityLocal += AngularAccelerationVector * AngularAcceleration * DeltaSeconds;
     AngularVelocityLocal *= FMath::Exp(-AngularDamping * DeltaSeconds);
 
