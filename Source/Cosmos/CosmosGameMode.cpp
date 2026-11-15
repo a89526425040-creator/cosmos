@@ -1,5 +1,6 @@
 #include "CosmosGameMode.h"
 #include "SpaceFlightPawn.h"
+#include "CosmosPlayerController.h"
 #include "PlanetActor.h"
 #include "StarfieldActor.h"
 #include "GameFramework/PlayerStart.h"
@@ -9,7 +10,7 @@
 ACosmosGameMode::ACosmosGameMode()
 {
     DefaultPawnClass = ASpaceFlightPawn::StaticClass();
-    PlayerControllerClass = APlayerController::StaticClass();
+    PlayerControllerClass = ACosmosPlayerController::StaticClass();
 }
 
 void ACosmosGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
