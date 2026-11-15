@@ -18,7 +18,7 @@ void ACosmosGameMode::InitGame(const FString& MapName, const FString& Options, F
 
     if (GetWorld())
     {
-        const FTransform StartTransform(FRotator::ZeroRotator, FVector(0.0f, 0.0f, 700000.0f));
+        const FTransform StartTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 0.0f, 700000.0f));
         GetWorld()->SpawnActor<APlayerStart>(APlayerStart::StaticClass(), StartTransform);
     }
 }
