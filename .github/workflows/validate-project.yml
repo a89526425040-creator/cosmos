@@ -25,6 +25,8 @@ jobs:
           test -f Source/Cosmos/SpaceFlightPawn.cpp
           test -f Source/Cosmos/PlanetActor.cpp
           test -f Source/Cosmos/CosmosGameMode.cpp
+          test -f Source/Cosmos/FlightTouchHUD.cpp
+          test -f Source/Cosmos/CosmosPlayerController.cpp
           test -f Config/DefaultEngine.ini
           python3 - <<'PY'
           import json
@@ -32,5 +34,6 @@ jobs:
           project = json.loads(Path("Cosmos.uproject").read_text())
           assert project["EngineAssociation"] == "5.8"
           assert any(m["Name"] == "Cosmos" for m in project["Modules"])
+          print("UE version:", project["EngineAssociation"])
           print("COSMOS project scaffold: OK")
           PY
