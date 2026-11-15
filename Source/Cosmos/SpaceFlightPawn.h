@@ -21,6 +21,8 @@ public:
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
     void SetInitialVelocity(const FVector& InVelocity);
+    void SetTouchRoll(float Value);
+    void SetTouchLift(float Value);
 
 protected:
     virtual void BeginPlay() override;
@@ -57,8 +59,10 @@ private:
     float PitchInput = 0.0f;
     float YawInput = 0.0f;
     float RollInput = 0.0f;
+    float TouchRollInput = 0.0f;
     float StrafeInput = 0.0f;
     float LiftInput = 0.0f;
+    float TouchLiftInput = 0.0f;
 
     float FuelKg = 6000.0f;
     float DryMassKg = 12000.0f;
