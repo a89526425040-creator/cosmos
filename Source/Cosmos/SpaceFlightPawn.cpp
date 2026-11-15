@@ -132,24 +132,18 @@ void ASpaceFlightPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
     PlayerInputComponent->BindAxis(TEXT("Throttle"), this, &ASpaceFlightPawn::InputThrottle);
     PlayerInputComponent->BindAxis(TEXT("Pitch"), this, &ASpaceFlightPawn::InputPitch);
     PlayerInputComponent->BindAxis(TEXT("Yaw"), this, &ASpaceFlightPawn::InputYaw);
-    PlayerInputComponent->BindAxis(TEXT("Roll"), this, &ASpaceFlightPawn::InputRollPositive);
+    PlayerInputComponent->BindAxis(TEXT("Roll"), this, &ASpaceFlightPawn::InputRoll);
     PlayerInputComponent->BindAxis(TEXT("Strafe"), this, &ASpaceFlightPawn::InputStrafe);
-    PlayerInputComponent->BindAxis(TEXT("Lift"), this, &ASpaceFlightPawn::InputLiftPositive);
+    PlayerInputComponent->BindAxis(TEXT("Lift"), this, &ASpaceFlightPawn::InputLift);
 
-    PlayerInputComponent->BindAction(TEXT("RollLeft"), IE_Pressed, this, &ASpaceFlightPawn::InputRollNegative);
-    PlayerInputComponent->BindAction(TEXT("RollRight"), IE_Pressed, this, &ASpaceFlightPawn::InputRollPositive);
-    PlayerInputComponent->BindAction(TEXT("LiftUp"), IE_Pressed, this, &ASpaceFlightPawn::InputLiftPositive);
-    PlayerInputComponent->BindAction(TEXT("LiftDown"), IE_Pressed, this, &ASpaceFlightPawn::InputLiftNegative);
 }
 
 void ASpaceFlightPawn::InputThrottle(float Value) { ThrottleInput = FMath::Clamp(Value, -1.0f, 1.0f); }
 void ASpaceFlightPawn::InputPitch(float Value) { PitchInput = FMath::Clamp(Value, -1.0f, 1.0f); }
 void ASpaceFlightPawn::InputYaw(float Value) { YawInput = FMath::Clamp(Value, -1.0f, 1.0f); }
-void ASpaceFlightPawn::InputRollPositive() { RollInput = 1.0f; }
-void ASpaceFlightPawn::InputRollNegative() { RollInput = -1.0f; }
+void ASpaceFlightPawn::InputRoll(float Value) { RollInput = FMath::Clamp(Value, -1.0f, 1.0f); }
 void ASpaceFlightPawn::InputStrafe(float Value) { StrafeInput = FMath::Clamp(Value, -1.0f, 1.0f); }
-void ASpaceFlightPawn::InputLiftPositive() { LiftInput = 1.0f; }
-void ASpaceFlightPawn::InputLiftNegative() { LiftInput = -1.0f; }
+void ASpaceFlightPawn::InputLift(float Value) { LiftInput = FMath::Clamp(Value, -1.0f, 1.0f); }
 
 void ASpaceFlightPawn::Tick(float DeltaSeconds)
 {
@@ -219,9 +213,6 @@ void ASpaceFlightPawn::UpdateFlightPhysics(float DeltaSeconds)
         AddActorLocalRotation(DeltaRotation, false, nullptr, ETeleportType::None);
     }
 
-    // Momentary digital controls return to neutral after each frame.
-    if (!IsInputKeyDown(EKeys::Q) && !IsInputKeyDown(EKeys::E)) RollInput = 0.0f;
-    if (!IsInputKeyDown(EKeys::R) && !IsInputKeyDown(EKeys::F)) LiftInput = 0.0f;
 }
 
 void ASpaceFlightPawn::UpdateFlightReadout()
