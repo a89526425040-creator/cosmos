@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "PlanetActor.generated.h"
 
+class USceneComponent;
 class UStaticMeshComponent;
 class UPrimitiveComponent;
 class UHierarchicalInstancedStaticMeshComponent;
