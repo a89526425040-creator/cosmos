@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerStart.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
 
 ACosmosGameMode::ACosmosGameMode()
 {
@@ -32,6 +34,14 @@ void ACosmosGameMode::StartPlay()
 
     GetWorld()->SpawnActor<APlanetActor>(APlanetActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
     GetWorld()->SpawnActor<AStarfieldActor>(AStarfieldActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+
+    ADirectionalLight* SunLight = GetWorld()->SpawnActor<ADirectionalLight>(
+        ADirectionalLight::StaticClass(), FVector::ZeroVector, FRotator(-28.0f, -35.0f, 0.0f));
+    if (SunLight && SunLight->GetLightComponent())
+    {
+        SunLight->GetLightComponent()->SetIntensity(100000.0f);
+        SunLight->GetLightComponent()->SetLightColor(FLinearColor(1.0f, 0.96f, 0.88f));
+    }
 }
 
 void ACosmosGameMode::RestartPlayer(AController* NewPlayer)
