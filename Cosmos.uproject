@@ -1,0 +1,17 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.7",
+  "Category": "Games",
+  "Description": "COSMOS - Newtonian space flight prototype",
+  "Modules": [
+    {
+      "Name": "Cosmos",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    { "Name": "AndroidDeviceProfileSelector", "Enabled": true },
+    { "Name": "AndroidFileServer", "Enabled": false }
+  ]
+}
