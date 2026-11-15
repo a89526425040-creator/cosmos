@@ -5,6 +5,7 @@
 #include "PlanetActor.generated.h"
 
 class UStaticMeshComponent;
+class UPrimitiveComponent;
 class UHierarchicalInstancedStaticMeshComponent;
 
 UCLASS()
