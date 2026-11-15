@@ -1,0 +1,36 @@
+name: Validate COSMOS project scaffold
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Cosmos.uproject
+          test -f Source/Cosmos/Cosmos.Build.cs
+          test -f Source/Cosmos/SpaceFlightPawn.cpp
+          test -f Source/Cosmos/PlanetActor.cpp
+          test -f Source/Cosmos/CosmosGameMode.cpp
+          test -f Config/DefaultEngine.ini
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          project = json.loads(Path("Cosmos.uproject").read_text())
+          assert project["EngineAssociation"] == "5.7"
+          assert any(m["Name"] == "Cosmos" for m in project["Modules"])
+          print("COSMOS project scaffold: OK")
+          PY
