@@ -69,7 +69,9 @@ private:
     float MainThrustNewtons = 250000.0f;
     float SpecificImpulseSeconds = 450.0f;
     float RcsAcceleration = 0.28f;
-    float AngularAcceleration = 0.38f;
+    float RollTorqueNewtonMetres = 1900000.0f;
+    float PitchYawTorqueNewtonMetres = 7600000.0f;
+    FVector RotationalInertiaKgMetresSquared = FVector(5000000.0f, 20000000.0f, 20000000.0f);
     float AngularDamping = 0.12f;
     float DragCoefficient = 0.32f;
     float ReferenceAreaSquareMetres = 24.0f;
