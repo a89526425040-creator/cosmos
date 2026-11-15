@@ -264,11 +264,15 @@ void ASpaceFlightPawn::UpdateFlightReadout()
         * FMath::Loge(FMath::Max(1.0, CurrentMassKg) / DryMassKg);
 
     const FString Readout = FString::Printf(
-        TEXT("COSMOS // FLIGHT DATA\nALTITUDE  %.1f km   SPEED  %.3f km/s (%.0f m/s)\n")
-        TEXT("THROTTLE  %+.0f%%   FUEL  %.0f / 6000 kg\nANGULAR RATE  %.1f deg/s\n")
-        TEXT("W/S: THRUST  A/D: YAW  MOUSE: PITCH/LOOK  Q/E: ROLL  R/F: VERTICAL RCS  J/L: STRAFE"),
+        TEXT("COSMOS // FLIGHT DATA\\nALTITUDE %.1f km   SPEED %.3f km/s (%.0f m/s)\\n")
+        TEXT("THROTTLE %+.0f%%   FUEL %.0f kg   MASS %.0f kg\\n")
+        TEXT("GRAVITY %.3f m/s2   ACCEL %.2f m/s2\\n")
+        TEXT("AIR DENSITY %.3g kg/m3   DYNAMIC PRESSURE %.2f Pa\\n")
+        TEXT("REMAINING DELTA-V %.0f m/s   ANGULAR RATE %.1f deg/s"),
         AltitudeKm, SpeedKmPerSecond, SpeedMetresPerSecond,
-        ThrottleInput * 100.0f, FuelKg, AngularSpeedDeg);
+        ThrottleInput * 100.0f, FuelKg, CurrentMassKg,
+        GravityMs2, AccelerationMs2, AirDensityKgPerCubicMetre,
+        DynamicPressurePascals, RemainingDeltaVMs, AngularSpeedDeg);
 
     GEngine->AddOnScreenDebugMessage(100, 0.1f, FColor::Cyan, Readout);
 }
